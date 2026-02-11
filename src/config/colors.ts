@@ -1,0 +1,10 @@
+export const IMColors = {
+  BLACK: '#000000',
+
+  APP_FFFFFF: '#FFFFFF',
+  APP_212121: '#212121',
+  APP_2A71ED: '#2A71ED',
+  APP_89909D: '#89909D',
+  APP_292D32: '#292D32',
+  APP_767C8C: '#767C8C',
+};

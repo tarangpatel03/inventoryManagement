@@ -1,45 +1,45 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import '~/locales/i18n';
+import { useMemo } from 'react';
+import { StatusBar } from 'react-native';
+import { Components } from '~/components';
+import { loaderRef } from '~/utils/loader';
+import Toast from 'react-native-toast-message';
+import { Provider, useSelector } from 'react-redux';
+import RootNavigation from '~/navigation/RootNavigation';
+import { persistor, RootState, store } from '~/store/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { DarkTheme, LightTheme, ThemeModeOptions } from '~/config/theme';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar barStyle={'light-content'} />
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <ThemeApp />
+        </PersistGate>
+      </Provider>
     </SafeAreaProvider>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+const ThemeApp = () => {
+  const currentThemeMode = useSelector(
+    (state: RootState) => state.user.currentThemeMode,
+  );
+
+  const currentTheme = useMemo(() => {
+    return currentThemeMode === ThemeModeOptions.Dark ? DarkTheme : LightTheme;
+  }, [currentThemeMode]);
 
   return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
+    <Components.ThemeProvider theme={currentTheme}>
+      <RootNavigation />
+      <Toast config={Components.IMBaseToast} />
+      <Components.IMLoader ref={loaderRef} />
+    </Components.ThemeProvider>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;
